@@ -32,14 +32,13 @@ let swiper = new Swiper('.swiper-container', {
 
 getMovies(APIURL);
 
-async function getMovies(url) {
+const getMovies = async (url) => {
     const resp = await fetch(url);
     const respData = await resp.json();
     console.log(respData);
     showMovies(respData.results);
-}
-
-function showMovies(movies) {
+};
+const showMovies =(movies)=> {
     // Clear existing slides
     swiper.removeAllSlides();
 
