@@ -30,7 +30,9 @@ let swiper = new Swiper('.swiper-container', {
 });
 
 
-getMovies(APIURL);
+document.addEventListener("DOMContentLoaded", function() {
+    getMovies(APIURL);
+});
 
 const getMovies = async (url) => {
     const resp = await fetch(url);
@@ -38,31 +40,62 @@ const getMovies = async (url) => {
     console.log(respData);
     showMovies(respData.results);
 };
-const showMovies =(movies)=> {
+
+const showMovies = (movies) => {
     // Clear existing slides
     swiper.removeAllSlides();
 
-    movies.forEach((movie) => {
-        const { poster_path, title } = movie;
+    if (movies.length === 0) {
+        const noResultsMessage = document.createElement("h2");
+        noResultsMessage.textContent = "No movies found.";
+        main.appendChild(noResultsMessage);
+    } else {
+        movies.forEach((movie) => {
+            const { poster_path, title, vote_average, overview } = movie;
 
-        // Create elements
-        const movieEl = document.createElement("div");
-        movieEl.classList.add("swiper-slide", "movie");
-        
-        const imgEl = document.createElement("img");
-        imgEl.src = IMGPATH + poster_path;
-        imgEl.alt = title;
+            // Create elements
+            const movieEl = document.createElement("div");
+            movieEl.classList.add("swiper-slide", "movie");
+            
+            const imgEl = document.createElement("img");
+            imgEl.src = IMGPATH + poster_path;
+            imgEl.alt = title;
 
-        const titleEl = document.createElement("h3");
-        titleEl.textContent = title;
+            const movieInfoEl = document.createElement("div");
+            movieInfoEl.classList.add("movie-info");
+            
+            const titleEl = document.createElement("h3");
+            titleEl.textContent = title;
 
-        // Append elements
-        movieEl.appendChild(imgEl);
-        movieEl.appendChild(titleEl);
+            const ratingEl = document.createElement("span");
+            ratingEl.textContent = vote_average;
+            ratingEl.classList.add(getClassByRate(vote_average));
 
-        swiper.appendSlide(movieEl);
-    });
-}
+            const overviewEl = document.createElement("div");
+            overviewEl.classList.add("overview");
+
+            const overviewHeadingEl = document.createElement("h3");
+            overviewHeadingEl.textContent = "Overview:";
+
+            const overviewContentEl = document.createElement("p");
+            overviewContentEl.textContent = overview;
+
+            // Append elements
+            movieInfoEl.appendChild(titleEl);
+            movieInfoEl.appendChild(ratingEl);
+
+           
+            overviewEl.appendChild(overviewHeadingEl);
+            overviewEl.appendChild(overviewContentEl);
+
+            movieEl.appendChild(imgEl);
+            movieEl.appendChild(movieInfoEl);
+            movieEl.appendChild(overviewEl);
+
+            swiper.appendSlide(movieEl);
+        });
+    }
+};
 
 
 
